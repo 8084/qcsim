@@ -167,7 +167,6 @@ window.onload = () => {
     };
 
     const resize = size => {
-        document.querySelector('#nqubits > span').innerHTML = 'Qubits: ' + size;
         const newGates = app.circuit.gates.filter(gate => {
             return gate.range[1] < size;
         });
@@ -181,24 +180,24 @@ window.onload = () => {
         } else {
             editor.resize(size, editor.length);
         }
+        document.querySelector('#qubitsCount').innerHTML = app.circuit.nqubits;
     };
 
-    const nqubitsUl = document.querySelector('#nqubits > ul');
-    for (let i = 1; i < 11; i++) {
-        const li = document.createElement('li');
-        const a = document.createElement('a');
-        a.href = '#';
-        a.innerHTML = i;
-        a.onclick = evt => {
-            evt.preventDefault();
-            resize(i);
-        };
-        li.appendChild(a);
-        nqubitsUl.appendChild(li);
-        if (i == 2) {
-            a.click();
+    var promptResize = evt => {
+        evt.preventDefault();
+        var r = prompt("Enter new number (values more than 10 are not recommended):", app.circuit.nqubits);
+        if (r === null) { return; }
+        r = Number.parseInt(r);
+        if (!Number.isInteger(r) || r < 1) {
+            alert("Please enter positive integer!");
+            return;
         }
+        resize(r);
     }
+
+    resize(2);
+
+    document.querySelector('#promptResize').onclick = promptResize;
 
     const getUrlVars = () => {
         const vars = [];
