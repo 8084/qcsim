@@ -5,13 +5,19 @@ var watchify = require('watchify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var gutil = require('gulp-util');
+var purescript = require('gulp-purescript');
+
+gulp.task('purescript-compile', function () {
+    return purescript.compile({ src: [ 'js/**/*.purs',
+                                       'bower_components/purescript-*/src/**/*.purs', ] });
+});
 
 var b = function() {
     return browserify({
         cache: {},
         packageCache: {},
         entries: ['./js/main.js'],
-        debug: true,
+        debug: false,
         transform: ['babelify']
     });
 };
@@ -31,6 +37,6 @@ gulp.task('watch', function() {
     w.on('update', bundle.bind(null, w));
 });
 
-gulp.task('build', bundle.bind(null, b()));
+gulp.task('build', ['purescript-compile'], bundle.bind(null, b()));
 
 gulp.task('default', ['watch']);
