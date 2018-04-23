@@ -158,12 +158,14 @@ window.onload = () => {
         evt.preventDefault();
         const out = app.exportWorkspace();
         out.version = FILE_VERSION;
-        const blob = new Blob([JSON.stringify(out)]);
+        const blob = new Blob([JSON.stringify(out, null, 4)]);
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
+        document.body.appendChild(a);
         a.href = url;
         a.download = 'workspace.json';
         a.click();
+        a.remove();
     };
 
     const resize = size => {
