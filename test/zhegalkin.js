@@ -32,4 +32,16 @@ describe('zhegalkin.js', () => {
             assert.deepStrictEqual(z.getTriangle(arg), res);
         });
     });
+
+    it('getArity', () => {
+        var tests = [
+            [4, 2],
+            [8, 3],
+            [1, 0],
+        ];
+
+        tests.forEach(([arg, res]) => {
+            assert.deepStrictEqual(z.getArity(arg), res);
+        });
+    });
 });

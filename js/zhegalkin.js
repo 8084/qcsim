@@ -1,7 +1,12 @@
+var assert = require('assert');
+
 module.exports = {
     reduceWithXor: reduceWithXor,
     getTriangle: getTriangle,
-    constructTT: constructTT
+    constructTT: constructTT,
+    getArity:    getArity,
+    constructCircuit: constructCircuit,
+    constructWorkspace: constructWorkspace,
 };
 
 function reduceWithXor (tt) {
@@ -39,5 +44,62 @@ function constructTT (n) {
         r.push(v1);
         r.push(v2);
     });
+    return r;
+}
+
+function getArity (n) {
+    return Math.log2(n);
+}
+
+function constructCircuit (ttc) {
+    var circuit = [];
+    // ttc is a last column of TT
+    var arity = getArity(ttc.length);
+
+    var ttargs = constructTT(arity);
+
+    var triangle = getTriangle(ttc);
+    var left = triangle.map(arr => arr[0]);
+    assert(left.length === ttc.length);
+
+    for (var time = 0; time < left.length; time++) {
+        var controls = getControls(ttargs[time], left[time]);
+        if (controls.length > 0) {
+            circuit.push({
+                type: 'x',
+                time: circuit.length,
+                targets: [
+                    arity
+                ],
+                controls: controls,
+            });
+        }
+    }
+
+    return circuit;
+}
+
+function constructWorkspace (ttc) {
+    var qubits = getArity(ttc.length) + 1;
+    var workspace = {
+        gates: [],
+        circuit: constructCircuit(ttc),
+        qubits: qubits,
+        input: new Array(qubits).fill(0),
+        version: 1,
+    };
+    console.log(workspace);
+    return workspace;
+}
+
+function getControls(args, flag) {
+    var r = [];
+    if (flag) {
+        for (var i = 0; i < args.length; i++) {
+            if (args[i]) {
+                r.push(i);
+            }
+        }
+    }
     return r;
 }
