@@ -5,6 +5,7 @@ var watchify = require('watchify');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var gutil = require('gulp-util');
+const mocha = require('gulp-mocha');
 
 var b = function() {
     return browserify({
@@ -30,6 +31,12 @@ gulp.task('watch', function() {
     bundle(w);
     w.on('update', bundle.bind(null, w));
 });
+
+
+gulp.task('test', () =>
+    gulp.src('./test/*.js', {read: false})
+	.pipe(mocha())
+);
 
 gulp.task('build', bundle.bind(null, b()));
 
