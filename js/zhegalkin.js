@@ -83,14 +83,28 @@ function constructCircuit (ttc) {
 }
 
 function constructWorkspace (ttc) {
-    var qubits = getArity(ttc.length) + 1;
-    var workspace = {
-        gates: [],
-        circuit: constructCircuit(ttc),
-        qubits: qubits,
-        input: new Array(qubits).fill(0),
-        version: 1,
-    };
+    var workspace;
+    if (!ttc.every(x => x)) {
+        var qubits = getArity(ttc.length) + 1;
+        workspace = {
+            gates: [],
+            circuit: constructCircuit(ttc),
+            qubits: qubits,
+            input: new Array(qubits).fill(0),
+            version: 1,
+        };
+    } else {
+        var qubits = getArity(ttc.length) + 1;
+        var input = new Array(qubits - 1).fill(0);
+        input.push(1);
+        workspace = {
+            gates: [],
+            circuit: [],
+            qubits: qubits,
+            input: input,
+            version: 1,
+        };
+    }
     return workspace;
 }
 
