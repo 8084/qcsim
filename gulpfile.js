@@ -12,8 +12,8 @@ var b = function() {
         cache: {},
         packageCache: {},
         entries: ['./js/main.js'],
-        debug: true,
-        transform: ['babelify']
+        debug: false,
+        transform: ['babelify', 'uglifyify']
     });
 };
 

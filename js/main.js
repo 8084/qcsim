@@ -5,7 +5,6 @@ const examples = require('./examples');
 const zhegalkin = require('./zhegalkin');
 const parser = require('./parser');
 
-
 const displayAmplitudes = (nqubits, amplitudes) => {
     const table = document.querySelector('#amplitudes');
     table.innerHTML = '';
