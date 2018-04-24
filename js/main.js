@@ -383,7 +383,13 @@ window.onload = () => {
             return zhegalkin.evaluate(ast, args);
         })
 
-        var workspace = zhegalkin.constructWorkspace(ttc);
+        var side = document.querySelector('#oracle-variant').value, workspace;
+        if (side == 'left') {
+            workspace = zhegalkin.constructWorkspace(ttc, true);
+        } else if (side == 'right')  {
+            workspace = zhegalkin.constructWorkspace(ttc, false);
+        }
+
         app.loadWorkspace(workspace);
 
         document.querySelector('#oraclegen-container').style.display = 'none';

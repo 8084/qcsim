@@ -54,7 +54,7 @@ function getArity (n) {
     return Math.log2(n);
 }
 
-function constructCircuit (ttc) {
+function constructCircuit (ttc, useLeft = true) {
     var circuit = [];
     // ttc is a last column of TT
     var arity = getArity(ttc.length);
@@ -62,11 +62,17 @@ function constructCircuit (ttc) {
     var ttargs = constructTT(arity);
 
     var triangle = getTriangle(ttc);
-    var left = triangle.map(arr => arr[0]);
-    assert(left.length === ttc.length);
+    var side;
+    if (useLeft) {
+        side = triangle.map(arr => arr[0]);
+    } else {
+        side = triangle.map(arr => arr.slice(-1)[0]);
+    }
 
-    for (var time = 0; time < left.length; time++) {
-        var controls = getControls(ttargs[time], left[time]);
+    assert(side.length === ttc.length);
+
+    for (var time = 0; time < side.length; time++) {
+        var controls = getControls(ttargs[time], side[time]);
         if (controls.length > 0) {
             circuit.push({
                 type: 'x',
@@ -82,20 +88,27 @@ function constructCircuit (ttc) {
     return circuit;
 }
 
-function constructWorkspace (ttc) {
-    var workspace;
+function constructWorkspace (ttc, useLeft = true) {
+    var workspace, qubits, input;
+
     if (!ttc.every(x => x)) {
-        var qubits = getArity(ttc.length) + 1;
+        qubits = getArity(ttc.length) + 1;
         workspace = {
             gates: [],
-            circuit: constructCircuit(ttc),
+            circuit: constructCircuit(ttc, useLeft),
             qubits: qubits,
             input: new Array(qubits).fill(0),
             version: 1,
         };
+
+        if (!useLeft) {
+            workspace.input[qubits - 1] = 1;
+        }
+
     } else {
-        var qubits = getArity(ttc.length) + 1;
-        var input = new Array(qubits - 1).fill(0);
+
+        qubits = getArity(ttc.length) + 1;
+        input = new Array(qubits - 1).fill(0);
         input.push(1);
         workspace = {
             gates: [],
@@ -105,6 +118,7 @@ function constructWorkspace (ttc) {
             version: 1,
         };
     }
+
     return workspace;
 }
 
