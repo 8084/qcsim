@@ -388,6 +388,12 @@ window.onload = () => {
             workspace = zhegalkin.constructWorkspace(ttc, true);
         } else if (side == 'right')  {
             workspace = zhegalkin.constructWorkspace(ttc, false);
+        } else {
+            workspace = zhegalkin.compareWorkspaces
+            (
+                zhegalkin.constructWorkspace(ttc, false),
+                zhegalkin.constructWorkspace(ttc, true)
+            );
         }
 
         app.loadWorkspace(workspace);

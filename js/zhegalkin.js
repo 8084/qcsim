@@ -10,6 +10,7 @@ module.exports = {
     evaluate: evaluate,
     getTT: getTT,
     getMaxVar: getMaxVar,
+    compareWorkspaces: compareWorkspaces,
 };
 
 function reduceWithXor (tt) {
@@ -71,17 +72,31 @@ function constructCircuit (ttc, useLeft = true) {
 
     assert(side.length === ttc.length);
 
-    for (var time = 0; time < side.length; time++) {
+    var shift = 0;
+    if (!useLeft) {
+        shift = 1;
+        for (var i = 0; i < arity + 1; i++) {
+            circuit.push({
+                type: 'x',
+                time: 0,
+                targets: [i],
+                controls: [],
+            });
+        }
+    }
+
+    for (var time = useLeft ? 0 : 1; time < side.length; time++) {
         var controls = getControls(ttargs[time], side[time]);
         if (controls.length > 0) {
             circuit.push({
                 type: 'x',
-                time: circuit.length,
+                time: shift,
                 targets: [
                     arity
                 ],
                 controls: controls,
             });
+            shift ++;
         }
     }
 
@@ -100,10 +115,6 @@ function constructWorkspace (ttc, useLeft = true) {
             input: new Array(qubits).fill(0),
             version: 1,
         };
-
-        if (!useLeft) {
-            workspace.input[qubits - 1] = 1;
-        }
 
     } else {
 
@@ -173,4 +184,20 @@ function getMaxVar (ast) {
 
     getMax(ast, tracker);
     return tracker.max + 1;
+}
+
+function compareWorkspaces(w1, w2) {
+    var c1 = w1.circuit, c2 = w2.circuit;
+
+    if (c1.length != c2.length) {
+        return c1.length < c2.length ? w1 : w2;
+    }
+
+    var controlsCount = circuit =>
+        circuit.map(gate => gate.controls.length).reduce((a, b) => a + b, 0);
+
+    if (controlsCount(c1) > controlsCount(c2)) {
+        return w2;
+    }
+    return w1;
 }
