@@ -7,6 +7,9 @@ module.exports = {
     getArity:    getArity,
     constructCircuit: constructCircuit,
     constructWorkspace: constructWorkspace,
+    evaluate: evaluate,
+    getTT: getTT,
+    getMaxVar: getMaxVar,
 };
 
 function reduceWithXor (tt) {
@@ -88,7 +91,6 @@ function constructWorkspace (ttc) {
         input: new Array(qubits).fill(0),
         version: 1,
     };
-    console.log(workspace);
     return workspace;
 }
 
@@ -102,4 +104,45 @@ function getControls(args, flag) {
         }
     }
     return r;
+}
+
+function getTT (ast) {
+    return constructTT(getMaxVar(ast)).map(a => evaluate(ast, a));
+}
+
+function evaluate(ast, args) {
+    args = args.map(a => !!a);
+    function ev(ast) {
+        if (typeof ast === 'number') {
+            return args[ast];
+        } else if (ast[0] === '-') {
+            return !ev(ast[1]);
+        } else if (ast[0] === '&') {
+            return ev(ast[1]) && ev(ast[2]);
+        } else if (ast[0] === '|') {
+            return ev(ast[1]) || ev(ast[2]);
+        } else if (ast[0] === '+') {
+            return ev(ast[1]) !== ev(ast[2]);
+        } else {
+            throw "Incorrect AST!";
+        }
+    }
+
+    return ev(ast);
+}
+
+function getMaxVar (ast) {
+    var tracker = { max : 0 };
+    function getMax (ast) {
+        if (typeof ast === 'number') {
+            if (ast > tracker.max) {
+                tracker.max = ast;
+            }
+        } else if (ast instanceof Array) {
+            ast.forEach(getMax);
+        }
+    }
+
+    getMax(ast, tracker);
+    return tracker.max + 1;
 }

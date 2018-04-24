@@ -2,6 +2,9 @@ const FILE_VERSION = 1;
 
 const Application = require('./application');
 const examples = require('./examples');
+const zhegalkin = require('./zhegalkin');
+const parser = require('./parser');
+
 
 const displayAmplitudes = (nqubits, amplitudes) => {
     const table = document.querySelector('#amplitudes');
@@ -201,6 +204,11 @@ window.onload = () => {
 
     document.querySelector('#promptResize').onclick = promptResize;
 
+    document.querySelector('#open-oraclegen').onclick = env => {
+        document.querySelector('#modal').style.display = 'block';
+        document.querySelector('#oraclegen-container').style.display = 'block';
+    }
+
     const getUrlVars = () => {
         const vars = [];
         const location = window.location.href;
@@ -221,6 +229,7 @@ window.onload = () => {
         ["Grover's Algorithm", examples.GROVERS_ALGORITHM],
         ["Quantum Teleportation", examples.TELEPORTATION],
     ];
+
     const examplesEl = document.querySelector('#examples');
     EXAMPLES.forEach((example, i) => {
         const name = example[0];
@@ -242,15 +251,142 @@ window.onload = () => {
 
     document.querySelector('#about').onclick = evt => {
         document.querySelector('#modal').style.display = 'block';
+        document.querySelector('#about-container').style.display = 'block';
     };
 
     document.querySelector('#modal').onclick = evt => {
         document.querySelector('#modal').style.display = 'none';
+        document.querySelector('#about-container').style.display = 'none';
+        document.querySelector('#oraclegen-container').style.display = 'none';
     };
 
-    document.querySelector('#modal > div').onclick = evt => {
-        evt.preventDefault();
-        evt.stopPropagation();
-    };
+    function updateTruthTable (ast) {
+        ast = ast || checkInput();
 
+        if (ast === null) return;
+
+        var arity = zhegalkin.getMaxVar(ast);
+        var ttargs = zhegalkin.constructTT(arity);
+        // construct last columnt of truth table;
+        var ttc = ttargs.map(args => {
+            return zhegalkin.evaluate(ast, args);
+        });
+
+        var ttargs = zhegalkin.constructTT(arity);
+
+        // remove the old table
+        var ttcontainer = document.querySelector('#tt-container')
+        ttcontainer.innerHTML = '';
+        ttcontainer.style.display = 'block';
+
+        // create a new one
+        var tte = document.createElement('table');
+        tte.border = '1';
+
+        // add table header
+        var th = document.createElement('tr');
+        for (var i = 0; i < ttargs[0].length; i++) {
+            var td = document.createElement('td');
+            td.className = 'ttheader';
+            td.textContent = i;
+            th.appendChild(td);
+        }
+
+        var td = document.createElement('td');
+        td.className = 'ttheader';
+        td.textContent = 'result'
+        th.appendChild(td);
+        tte.appendChild(th);
+
+        // add table contents
+        for (var i = 0; i < ttargs.length; i++) {
+            var arglist = ttargs[i];
+            var tr = document.createElement('tr');
+            for (var arg of arglist) {
+                var td = document.createElement('td');
+                td.textContent = arg ? '1' : '0';
+                tr.appendChild(td);
+            }
+            var td = document.createElement('td');
+            td.textContent = ttc[i] ? '1' : '0';
+            td.className = 'ttvalue';
+            tr.appendChild(td);
+            tte.appendChild(tr);
+        }
+
+        ttcontainer.appendChild(tte);
+    }
+
+    function updateAST (ast) {
+        ast = ast || checkInput();
+        var container = document.querySelector('#ast-container');
+        container.textContent = JSON.stringify(ast, null, 4);
+        container.style.display = 'block';
+    }
+
+    function checkInput () {
+        var input = document.querySelector('#prop-oracle').value;
+        var status = document.querySelector('#parse-status');
+        try {
+            var ast = parser.parse(input);
+            status.textContent = 'The proposition is valid';
+            status.style.color = 'green';
+            return ast;
+        } catch (e) {
+            status.textContent = e.message;
+            status.style.color = 'red';
+            return null;
+        }
+    }
+
+    function clearTruthTable () {
+        document.querySelector('#tt-container').style.display = 'none';
+    }
+
+    function clearAST () {
+        document.querySelector('#ast-container').style.display = 'none';
+    }
+
+    document.querySelector('#prop-oracle').onkeyup = evt => {
+        var ast = checkInput();
+
+        if (ast === null) {
+            clearAST(); clearTruthTable();
+            return;
+        }
+        if (document.querySelector('#show-tt').checked) {
+            updateTruthTable(ast);
+        }
+        if (document.querySelector('#show-ast').checked) {
+            updateAST(ast);
+        }
+    }
+
+    document.querySelector('#show-tt').onclick = evt => {
+        (evt.target.checked) ? updateTruthTable() : clearTruthTable();
+    }
+
+    document.querySelector('#show-ast').onclick = evt => {
+        (evt.target.checked) ? updateAST() : clearAST();
+    }
+
+
+    document.querySelector('#apply-oracle').onclick = evt => {
+        var ast = checkInput();
+
+        if (ast === null) return;
+
+        var arity = zhegalkin.getMaxVar(ast);
+        var ttargs = zhegalkin.constructTT(arity);
+        // construct last columnt of truth table;
+        var ttc = ttargs.map(args => {
+            return zhegalkin.evaluate(ast, args);
+        })
+
+        var workspace = zhegalkin.constructWorkspace(ttc);
+        app.loadWorkspace(workspace);
+
+        document.querySelector('#oraclegen-container').style.display = 'none';
+        document.querySelector('#modal').style.display = 'none';
+    }
 };

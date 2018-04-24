@@ -44,4 +44,17 @@ describe('zhegalkin.js', () => {
             assert.deepStrictEqual(z.getArity(arg), res);
         });
     });
+
+    it('evaluate', () => {
+        var tests = [
+            [['+', 0, 1],           [0, 1], true],
+            [['+', 0, ['&', 0, 1]], [0, 1], false],
+            [['+', 0, ['&', 0, 1]], [1, 1], false],
+            [['+', 0, ['+', 0, 1]], [1, 0], false],
+        ];
+
+        tests.forEach(([ast, args, res]) => {
+            assert.deepStrictEqual(z.evaluate(ast, args), res);
+        });
+    });
 });
