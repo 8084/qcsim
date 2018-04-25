@@ -10,7 +10,7 @@ module.exports = {
     evaluate: evaluate,
     getTT: getTT,
     getMaxVar: getMaxVar,
-    compareWorkspaces: compareWorkspaces,
+    compareCircuits: compareCircuits,
 };
 
 function reduceWithXor (tt) {
@@ -84,6 +84,8 @@ function constructCircuit (ttc, useLeft = true) {
     assert(side.length === ttc.length);
 
     var shift = 0;
+
+    // Add a column of Xs
     if (!useLeft) {
         shift = 1;
         for (var i = 0; i < arity + 1; i++) {
@@ -182,18 +184,17 @@ function getMaxVar (ast) {
     return tracker.max + 1;
 }
 
-function compareWorkspaces(w1, w2) {
-    var c1 = w1.circuit, c2 = w2.circuit;
+function compareCircuits (c1, c2) {
 
     if (c1.length != c2.length) {
-        return c1.length < c2.length ? w1 : w2;
+        return c1.length < c2.length ? c1 : c2;
     }
 
     var controlsCount = circuit =>
         circuit.map(gate => gate.controls.length).reduce((a, b) => a + b, 0);
 
     if (controlsCount(c1) > controlsCount(c2)) {
-        return w2;
+        return c2;
     }
-    return w1;
+    return c1;
 }

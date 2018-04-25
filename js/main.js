@@ -4,6 +4,8 @@ const Application = require('./application');
 const examples = require('./examples');
 const zhegalkin = require('./zhegalkin');
 const parser = require('./parser');
+const Circuit = require('./circuit');
+const Gate = require('./gate');
 
 const displayAmplitudes = (nqubits, amplitudes) => {
     const table = document.querySelector('#amplitudes');
@@ -383,26 +385,48 @@ window.onload = () => {
         if (ast === null) return;
 
         var arity = zhegalkin.getMaxVar(ast);
+        var nqubits = arity + 1;
         var ttargs = zhegalkin.constructTT(arity);
         // construct last columnt of truth table;
         var ttc = ttargs.map(args => {
             return zhegalkin.evaluate(ast, args);
         })
 
-        var side = document.querySelector('#oracle-variant').value, workspace;
+        var side = document.querySelector('#oracle-variant').value, gates;
         if (side == 'left') {
-            workspace = zhegalkin.constructWorkspace(ttc, true);
+            gates = zhegalkin.constructCircuit(ttc, true);
         } else if (side == 'right')  {
-            workspace = zhegalkin.constructWorkspace(ttc, false);
+            gates = zhegalkin.constructCircuit(ttc, false);
         } else {
-            workspace = zhegalkin.compareWorkspaces
+            gates = zhegalkin.compareCircuits
             (
-                zhegalkin.constructWorkspace(ttc, false),
-                zhegalkin.constructWorkspace(ttc, true)
+                zhegalkin.constructCircuit(ttc, false),
+                zhegalkin.constructCircuit(ttc, true)
             );
         }
+        gates = gates.sort((a, b) => a.time - b.time);
 
-        app.loadWorkspace(workspace);
+        var circuit = Circuit.load(app, nqubits, gates);
+        circuit.inputs = new Array(nqubits).fill(0);
+
+        const size = Math.pow(2, nqubits);
+        const U = new numeric.T(numeric.identity(size), numeric.rep([size, size], 0));
+        app.applyCircuit(circuit, U, U => {
+            if (app.workspace.gates[name]) {
+                app.workspace.gates[name].matrix = U;
+                app.workspace.gates[name].circuit = circuit.copy();
+                app.workspace.gates[name].nqubits = circuit.nqubits;
+                app.workspace.gates[name].input = circuit.inputs;
+            } else {
+                app.workspace.addGate({
+                    name: name,
+                    qubits: circuit.nqubits,
+                    matrix: U,
+                    circuit: circuit.copy(),
+                    input: circuit.inputs
+                });
+            }
+        });
 
         document.querySelector('#oraclegen-container').style.display = 'none';
         document.querySelector('#modal').style.display = 'none';
