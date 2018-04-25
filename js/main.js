@@ -372,6 +372,12 @@ window.onload = () => {
 
 
     document.querySelector('#apply-oracle').onclick = evt => {
+        var name = document.querySelector('#oracle-name').value;
+        if (!name) {
+            alert('Please specify circuit name!');
+            return;
+        }
+
         var ast = checkInput();
 
         if (ast === null) return;
