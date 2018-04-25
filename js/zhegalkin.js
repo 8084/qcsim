@@ -56,6 +56,15 @@ function getArity (n) {
 }
 
 function constructCircuit (ttc, useLeft = true) {
+
+    if (ttc.every(x => x)) {
+        var nqubits = getArity(ttc.length);
+        return [ { type: 'x',
+                   time: 0,
+                   targets: [nqubits],
+                   controls: [] } ];
+    }
+
     var circuit = [];
     // ttc is a last column of TT
     var arity = getArity(ttc.length);
@@ -106,29 +115,14 @@ function constructCircuit (ttc, useLeft = true) {
 function constructWorkspace (ttc, useLeft = true) {
     var workspace, qubits, input;
 
-    if (!ttc.every(x => x)) {
-        qubits = getArity(ttc.length) + 1;
-        workspace = {
-            gates: [],
-            circuit: constructCircuit(ttc, useLeft),
-            qubits: qubits,
-            input: new Array(qubits).fill(0),
-            version: 1,
-        };
-
-    } else {
-
-        qubits = getArity(ttc.length) + 1;
-        input = new Array(qubits - 1).fill(0);
-        input.push(1);
-        workspace = {
-            gates: [],
-            circuit: [],
-            qubits: qubits,
-            input: input,
-            version: 1,
-        };
-    }
+    qubits = getArity(ttc.length) + 1;
+    workspace = {
+        gates: [],
+        circuit: constructCircuit(ttc, useLeft),
+        qubits: qubits,
+        input: new Array(qubits).fill(0),
+        version: 1,
+    };
 
     return workspace;
 }
