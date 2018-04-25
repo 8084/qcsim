@@ -380,6 +380,11 @@ window.onload = () => {
             return;
         }
 
+        if (!!app.workspace.gates[name]) {
+            overwrite = confirm("Circuit " + name + " already exists. Overwrite?");
+            if (!overwrite) return;
+        }
+
         var ast = checkInput();
 
         if (ast === null) return;
