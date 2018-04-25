@@ -87,7 +87,7 @@ module.exports = class Application {
         } else if (name == 'cnot') {
             draw.not(20, 20);
         } else {
-            draw.gate(20, 20, 1, name.toUpperCase());
+            draw.gate(20, 20, 1, name);
         }
         const img = document.createElement('img');
         img.src = canvas.toDataURL();

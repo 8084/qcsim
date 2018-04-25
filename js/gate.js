@@ -52,7 +52,7 @@ module.exports = class Gate {
             draw.wire(x, y1, y2);
             draw.swap(x, y2);
         } else {
-            draw.gate(x, y1, this.targets.length, this.type.name.toUpperCase());
+            draw.gate(x, y1, this.targets.length, this.type.name);
         }
     }
 
