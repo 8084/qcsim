@@ -57,21 +57,23 @@ function getArity (n) {
 
 function constructCircuit (ttc, useLeft = true) {
 
+    // ttc is a last column of TT
+    var arity = getArity(ttc.length);
+
+    // Check if the proposition is a tautology
     if (ttc.every(x => x)) {
-        var nqubits = getArity(ttc.length);
         return [ { type: 'x',
                    time: 0,
-                   targets: [nqubits],
+                   targets: [arity],
                    controls: [] } ];
     }
 
     var circuit = [];
-    // ttc is a last column of TT
-    var arity = getArity(ttc.length);
 
     var ttargs = constructTT(arity);
 
     var triangle = getTriangle(ttc);
+
     var side;
     if (useLeft) {
         side = triangle.map(arr => arr[0]);
@@ -94,8 +96,8 @@ function constructCircuit (ttc, useLeft = true) {
         }
     }
 
-    for (var time = useLeft ? 0 : 1; time < side.length; time++) {
-        var controls = getControls(ttargs[time], side[time]);
+    for (var i = 0; i < side.length; i++) {
+        var controls = getControls(ttargs[i], side[i]);
         if (controls.length > 0) {
             circuit.push({
                 type: 'x',
