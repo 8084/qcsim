@@ -266,7 +266,8 @@ window.onload = () => {
 
         var arity = zhegalkin.getMaxVar(ast);
         var ttargs = zhegalkin.constructTT(arity);
-        // construct last columnt of truth table;
+
+        // construct last column of truth table;
         var ttc = ttargs.map(args => {
             return zhegalkin.evaluate(ast, args);
         });
