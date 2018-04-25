@@ -33,18 +33,22 @@ module.exports = class Application {
                 return el.className && el.className.indexOf('gate') > -1;
             });
             if (target) {
-                let ok = true;
-                if (app.circuit.gates.length > 0) {
-                    // Only confirm if circuit isn't empty
-                    ok = confirm('Load gate: ' + target.dataset.type + '?');
-                }
-                if (ok) {
-                    app.editCircuit(app.workspace.gates[target.dataset.type]);
-                }
+                this.confirmLoading(target.dataset.type)
             }
         };
 
         document.querySelectorAll('#toolbar div.gate')[0].click();
+    }
+
+    confirmLoading (name) {
+        let ok = true;
+        // Only confirm if circuit isn't empty
+        if (this.circuit.gates.length > 0) {
+            ok = confirm('Load gate: ' + name + '?');
+        }
+        if (ok) {
+            this.editCircuit(this.workspace.gates[name]);
+        }
     }
 
     /*

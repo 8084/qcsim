@@ -426,9 +426,18 @@ window.onload = () => {
                     input: circuit.inputs
                 });
             }
-        });
 
-        document.querySelector('#oraclegen-container').style.display = 'none';
-        document.querySelector('#modal').style.display = 'none';
+            app.editCircuit(app.workspace.gates[name]);
+            var active = document.querySelector('.gate.active');
+            if (active) {
+                active.classList.remove('active');
+            }
+
+            Array.from(document.querySelectorAll('.gate'))
+                 .find(elem => elem.dataset.type == name).classList.add('active');
+
+            document.querySelector('#oraclegen-container').style.display = 'none';
+            document.querySelector('#modal').style.display = 'none';
+        });
     }
 };
