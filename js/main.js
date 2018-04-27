@@ -78,6 +78,56 @@ window.onload = () => {
         });
     };
 
+    function getAmplitudes (nqubits, amplitudes) {
+        var r = [];
+        for (let i = 0; i < amplitudes.x.length; i++) {
+            let amplitude = '';
+            let state = '';
+            for (let j = 0; j < nqubits; j++) {
+                state = ((i & (1 << j)) >> j) + state;
+            }
+            amplitude += amplitudes.x[i].toFixed(8);
+            amplitude += amplitudes.y[i] < 0 ? '-' : '+';
+            amplitude += Math.abs(amplitudes.y[i]).toFixed(8) + 'i';
+            const row = document.createElement('tr');
+            let prob = Math.pow(amplitudes.x[i], 2);
+            prob += Math.pow(amplitudes.y[i], 2);
+            if (prob < numeric.epsilon) {
+                continue;
+            }
+            const probability = (prob * 100).toFixed(4) + '%';
+            r.push({ amp: amplitude, state: state, probability: probability });
+        }
+        return r;
+    }
+
+    function runAssertions (circuit, ast) {
+        var arity = zhegalkin.getMaxVar(ast);
+        var ttargs = zhegalkin.constructTT(arity);
+
+        circuit.gates.sort((a, b) => a.time - b.time);
+        const size = Math.pow(2, circuit.nqubits);
+
+        ttargs.forEach(arglist => {
+            var state = arglist.map(e => e ? '1' : '0').join('');
+            ((state) => {
+                var amplitudes = new numeric.T(numeric.rep([size], 0), numeric.rep([size], 0));
+                amplitudes.x[parseInt(state, 2)] = 1;
+                circuit.evaluate(amplitudes, () => {}, x => {
+                    var args = Array.from(state).map(e => e == '1')
+                    var st = getAmplitudes(arity + 1, x)[0].state;
+                    var result = st.slice(-1) == '1';
+                    var asserted = zhegalkin.evaluate(ast, args);
+                    if (result != asserted) {
+                        console.log('Error! state: ', state, 'result: ', result, 'asserted: ', asserted, 'Output state:', st);
+                        alert('Error! See JS console.');
+                    } else {
+                    }
+                });
+            })(state + '0');
+        });
+    }
+
     document.body.onkeydown = evt => {
         // Catch hotkeys
         if (evt.which == 'S'.charCodeAt(0) && evt.ctrlKey) {
@@ -443,6 +493,8 @@ window.onload = () => {
 
             document.querySelector('#oraclegen-container').style.display = 'none';
             document.querySelector('#modal').style.display = 'none';
+
+            runAssertions(circuit, ast);
         });
     }
 };
