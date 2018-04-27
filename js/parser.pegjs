@@ -6,7 +6,7 @@ Expression
     }
 
 Not
-  = "-" e:Expression { return ["-", e] }
+  = "-" e:Factor { return ["-", e] }
 
 Term
   = head:Factor tail:(_ ("&") _ Factor)* {
