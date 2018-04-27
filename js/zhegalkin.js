@@ -83,12 +83,21 @@ function constructCircuit (ttc, useLeft = true) {
 
     assert(side.length === ttc.length);
 
-    var shift = 0;
+    var shift = 0,
+        flipResult = side[0];
+
+    if (flipResult) {
+        circuit.push({
+            type: 'x',
+            time: 0,
+            targets: [arity],
+            controls: [],
+        });
+    }
 
     // Add a column of Xs
     if (!useLeft) {
-        shift = 1;
-        for (var i = 0; i < arity + 1; i++) {
+        for (var i = 0; i < arity; i++) {
             circuit.push({
                 type: 'x',
                 time: 0,
@@ -98,15 +107,17 @@ function constructCircuit (ttc, useLeft = true) {
         }
     }
 
+    if (!useLeft || flipResult) {
+        shift = 1;
+    }
+
     for (var i = 0; i < side.length; i++) {
         var controls = getControls(ttargs[i], side[i]);
         if (controls.length > 0) {
             circuit.push({
                 type: 'x',
                 time: shift,
-                targets: [
-                    arity
-                ],
+                targets: [ arity ],
                 controls: controls,
             });
             shift ++;
