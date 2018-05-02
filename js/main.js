@@ -153,7 +153,7 @@ window.onload = () => {
                     app.workspace.gates[name].nqubits = app.circuit.nqubits;
                     app.workspace.gates[name].input = app.editor.input;
                 } else {
-                    app.workspace.addGate({
+                    app.addGate({
                         name: name,
                         qubits: app.circuit.nqubits,
                         matrix: U,
@@ -473,7 +473,7 @@ window.onload = () => {
                 app.workspace.gates[name].nqubits = circuit.nqubits;
                 app.workspace.gates[name].input = circuit.inputs;
             } else {
-                app.workspace.addGate({
+                app.addGate({
                     name: name,
                     qubits: circuit.nqubits,
                     matrix: U,

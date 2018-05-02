@@ -3,15 +3,21 @@ const Draw = require('./draw');
 const Editor = require('./editor');
 const Gate = require('./gate');
 const Workspace = require('./workspace');
+const standardGates = require('./standard-gates');
 
 module.exports = class Application {
 
     constructor(canvas, nqubits) {
         const app = this;
-        this.workspace = new Workspace(app);
+        this.workspace = new Workspace();
         const circuit = this.circuit = new Circuit(nqubits);
         const editor = this.editor = new Editor(app, canvas);
         const toolbar = document.querySelector('#toolbar');
+
+        standardGates.forEach(gate => {
+            this.addToolbarButton('std', gate.name, gate.title);
+        });
+
         toolbar.onclick = evt => {
             let target = findParent(evt.target, el => {
                 return el.className && el.className.indexOf('gate') > -1;
@@ -113,11 +119,11 @@ module.exports = class Application {
     loadWorkspace(json) {
         document.querySelector('#toolbar .std').innerHTML = '';
         document.querySelector('#toolbar .user').innerHTML = '';
-        this.workspace = new Workspace(this);
+        this.workspace = new Workspace();
         if (json.gates) {
             for (let i = 0 ; i < json.gates.length; i++) {
                 const gate = json.gates[i];
-                this.workspace.addGate({
+                this.addGate({
                     name: gate.name,
                     qubits: gate.qubits,
                     matrix: gate.matrix,
@@ -133,6 +139,11 @@ module.exports = class Application {
         document.querySelector('#qubitsCount').innerHTML = this.circuit.nqubits;
         this.compileAll();
         this.editor.render();
+    }
+
+    addGate (ops, std) {
+        this.workspace.addGate(ops, std);
+        this.addToolbarButton(std ? 'std' : 'user', ops.name, ops.title);
     }
 
     /*
