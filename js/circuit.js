@@ -3,8 +3,7 @@ const quantum = require('./quantum');
 
 class Circuit {
 
-    constructor(app, nqubits) {
-        this.app = app;
+    constructor(nqubits) {
         this.nqubits = nqubits;
         this.gates = [];
         this.matrix = null;
@@ -31,7 +30,7 @@ class Circuit {
     Return a copy of this circuit
     */
     copy() {
-        const circuit = new Circuit(this.app, this.nqubits);
+        const circuit = new Circuit(this.nqubits);
         for (let i = 0; i < this.gates.length; i++) {
             const gate = this.gates[i];
             circuit.addGate(new Gate(
@@ -97,7 +96,7 @@ class Circuit {
 module.exports = Circuit;
 
 Circuit.load = (app, nqubits, gates) => {
-    const circuit = new Circuit(app, nqubits);
+    const circuit = new Circuit(nqubits);
     for (let i = 0; i < gates.length; i++) {
         const gate = gates[i];
         circuit.addGate(new Gate(

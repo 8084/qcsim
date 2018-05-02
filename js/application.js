@@ -9,7 +9,7 @@ module.exports = class Application {
     constructor(canvas, nqubits) {
         const app = this;
         this.workspace = new Workspace(app);
-        const circuit = this.circuit = new Circuit(app, nqubits);
+        const circuit = this.circuit = new Circuit(nqubits);
         const editor = this.editor = new Editor(app, canvas);
         const toolbar = document.querySelector('#toolbar');
         toolbar.onclick = evt => {
