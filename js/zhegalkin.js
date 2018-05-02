@@ -124,6 +124,18 @@ function constructCircuit (ttc, useLeft = true) {
         }
     }
 
+    // Add a column of Xs
+    if (!useLeft) {
+        for (var i = 0; i < arity; i++) {
+            circuit.push({
+                type: 'x',
+                time: shift,
+                targets: [i],
+                controls: [],
+            });
+        }
+    }
+
     return circuit;
 }
 
