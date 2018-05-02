@@ -129,11 +129,11 @@ module.exports = class Application {
                     matrix: gate.matrix,
                     fn: gate.fn,
                     title: gate.title,
-                    circuit: Circuit.load(this, gate.qubits, gate.circuit)
+                    circuit: Circuit.load(this.workspace, gate.qubits, gate.circuit)
                 });
             }
         }
-        this.circuit = Circuit.load(this, json.qubits, json.circuit);
+        this.circuit = Circuit.load(this.workspace, json.qubits, json.circuit);
         this.editor.resize(this.circuit.nqubits, this.editor.length);
         this.editor.input = json.input;
         document.querySelector('#qubitsCount').innerHTML = this.circuit.nqubits;
@@ -217,7 +217,6 @@ module.exports = class Application {
             callback(x);
         });
     }
-
 }
 
 

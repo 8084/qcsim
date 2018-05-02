@@ -37,7 +37,7 @@ function xor (x, y) {
 }
 
 function constructTT (n) {
-    if (n === 0) return [[]];
+    if (n < 1) return [[]];
 
     var r = [];
     constructTT(n - 1).forEach(row => {

@@ -1,3 +1,4 @@
+const numeric = require('./libs/numeric.js');
 const quantum = module.exports;
 
 /*

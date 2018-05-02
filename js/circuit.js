@@ -91,16 +91,21 @@ class Circuit {
         })(0);
     }
 
+    evaluateP(x) {
+        return new Promise((resolve, reject) => {
+            this.evaluate(x, () => {}, resolve);
+        });
+    }
 }
 
 module.exports = Circuit;
 
-Circuit.load = (app, nqubits, gates) => {
+Circuit.load = (workspace, nqubits, gates) => {
     const circuit = new Circuit(nqubits);
     for (let i = 0; i < gates.length; i++) {
         const gate = gates[i];
         circuit.addGate(new Gate(
-            app.workspace.gates[gate.type],
+            workspace.gates[gate.type],
             gate.time + 1,
             gate.targets,
             gate.controls

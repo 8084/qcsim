@@ -35,7 +35,7 @@ gulp.task('watch', function() {
 
 gulp.task('test', () =>
     gulp.src('./test/*.js', {read: false})
-	.pipe(mocha())
+	.pipe(mocha({ timeout: 20000 }))
 );
 
 gulp.task('build', bundle.bind(null, b()));
