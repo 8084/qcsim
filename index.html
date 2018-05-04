@@ -109,11 +109,11 @@
           </div>
         </p>
         <p>
-          Variant:
+          Mode:
           <select id="oracle-variant">
             <option value="best">Best</option>
-            <option value="left" selected>"Left"</option>
-            <option value="right">"Right"</option>
+            <option value="left" selected>Normal</option>
+            <option value="right">Negated</option>
           </select>
           <button id="apply-oracle">Apply</button>
         </p>
@@ -198,6 +198,51 @@
         <ul>
           <li>You can resize your circuit by changing the <b>Qubits</b> setting in the <b>Circuit</b> menu.</li>
           <li>If the new size is smaller than the existing circuit, gates that don't fit will be removed.</li>
+        </ul>
+      </p>
+      <p>
+        <h3>Oracle generator:</h3>
+        You can generate a quantum oracle for any predicate by clicking <b>Oracle Generator</b> in the <b>Circuit</b> menu.
+        <ul>
+          <li>Enter name for the resulting gate. The oracle will be saved under that name (it will appear on the top panel).</li>
+
+          <li>Enter logical proposition. Logical connectives are:
+            <br>
+            <table>
+              <tr style="color: #555">
+                <td>Symbol</td>
+                <td>Meaning</td>
+                <td>Priority</td>
+              </tr>
+              <tr>
+                <td>|</td>
+                <td>OR</td>
+                <td>1</td>
+              </tr>
+              <tr>
+                <td>+</td>
+                <td>XOR</td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>&</td>
+                <td>AND</td>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td>-</td>
+                <td>NOT</td>
+                <td>4</td>
+              </tr>
+            </table>
+          </li>
+          <br>
+          All connectives are left-associative.
+          <li>
+            Propositional variables should be represented by the corresponding gate numbers (starting from 0).
+          </li>
+          <li>You can review the parse tree and check the truth table for given proposition. Both will update while you type if the proposition is correct. Otherwise the error message will be shown.</li>
+          <li>You can choose how the program should generate the oracle by selecting "Normal", "Negated" or "Best" mode. If you select "Negated", "X" gate (logical NOT analogue) will be placed on every input qubit twice - before and after the oracle body. It may make the circuit much shorter for some kind of predicates. The default mode is "Best", which automatically selects the variant that returns the shortest circuit.</li>
         </ul>
       </p>
     </div>
