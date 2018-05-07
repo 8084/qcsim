@@ -4,6 +4,7 @@ body {
 }
 #content {
     margin-left: 10px;
+    margin-top: 32px;
 }
 canvas:focus {
     outline: 0;
@@ -80,6 +81,7 @@ canvas:focus {
     color: #fff;
     font-family: Monospace;
     font-size: 16px;
+    position: fixed;
 }
 #menubar > li {
     margin-right: 2px;
