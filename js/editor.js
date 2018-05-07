@@ -79,6 +79,9 @@ module.exports = class Editor {
                 } else if (type.qubits == qubits.length || type.qubits == Infinity || type.name == 'cnot' || type.name == 'swap') {
                     editor.createGate(type, time, qubits);
                 }
+                if (editor.length - 1 == time) {
+                    editor.resize(editor.app.circuit.nqubits, editor.length + 1);
+                }
             }
             // Clear mouse events
             node.onmouseup = null;
