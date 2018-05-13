@@ -42,7 +42,7 @@ canvas:focus {
 }
 #amplitudes-scrollbox {
     max-height: 480px;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 #hide-impossible {
     color: #ccc;
