@@ -91,9 +91,10 @@ class Circuit {
         })(0);
     }
 
-    evaluateP(x) {
+    evaluateP(x, progress) {
+        prolgress = progress || (() => {});
         return new Promise((resolve, reject) => {
-            this.evaluate(x, () => {}, resolve);
+            this.evaluate(x, progress, resolve);
         });
     }
 }
