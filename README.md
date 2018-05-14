@@ -2,4 +2,6 @@
 
 A browser based quantum circuit editor and simulator.
 
-Application here: [https://qcsimulator.github.io/](https://qcsimulator.github.io/)
+Forked from [qcsimulator.github.io](https://github.com/qcsimulator/qcsimulator.github.io/)
+
+Application is here: [https://qcsim.rgpu.club/](https://qcsim.rgpu.club/)
