@@ -181,6 +181,8 @@ function evaluate(ast, args) {
             return ev(ast[1]) && ev(ast[2]);
         } else if (ast[0] === '|') {
             return ev(ast[1]) || ev(ast[2]);
+        } else if (ast[0] === '->') {
+            return !ev(ast[1]) || ev(ast[2]);
         } else if (ast[0] === '+') {
             return ev(ast[1]) !== ev(ast[2]);
         } else {
