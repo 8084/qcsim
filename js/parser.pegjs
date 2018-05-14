@@ -8,6 +8,8 @@ function reduce (head, tail) {
 
 }
 
+Impl = head:Disj    tail:(_ ("->") _      Disj)* { return reduce (head, tail); }
+
 Disj = head:Xor    tail:(_ ("|") _         Xor)* { return reduce (head, tail); }
 
 Xor  = head:Conj   tail:(_ ('+') _        Conj)* { return reduce (head, tail); }
@@ -15,7 +17,7 @@ Xor  = head:Conj   tail:(_ ('+') _        Conj)* { return reduce (head, tail); }
 Conj = head:Factor tail:(_ ("&") _      Factor)* { return reduce (head, tail); }
 
 Factor
-  = "(" _ expr:Disj _ ")" { return expr; }
+  = "(" _ expr:Impl _ ")" { return expr; }
   / Not
   / Integer
 
