@@ -82,26 +82,37 @@
               <td>Gate name:</td>
               <td><input id="oracle-name" value=""></td>
             </tr>
-            <tr>
+            <tr id="oracle-proposition-container">
               <td>Logical proposition:</td>
-              <td><input id="prop-oracle" placeholder="0 + 2 | (1 + -3)"></td>
+              <td>
+                <input id="prop-oracle" placeholder="0 + 2 | (1 + -3)">
+                <span id="parse-status"></span>
+              </td>
+            </tr>
+            <tr>
+              <td><a href="#" id="oracle-enter-truth-table">Enter truth table instead</a></td>
             </tr>
             <tr>
               <td colspan="2">
-                <span id="parse-status"></span>
+                <table id="oracle-truth-table-input"></table>
               </td>
+            </tr>
           </table>
         </p>
-        <p>
-          <input type="checkbox" autocomplete="off" name="show-ast" id="show-ast">
-          <label for="show-ast">Show parse tree</label>
-          <div id="ast-container" style="display:none">
-          </div>
-          <input type="checkbox" autocomplete="off" name="show-tt" id="show-tt">
-          <label for="show-tt">Show truth table</label>
-          <div id="tt-container" style="display:none">
-          </div>
-        </p>
+        <div id="oracle-prop-preview-options">
+          <p>
+            <input type="checkbox" autocomplete="off" name="show-ast" id="show-ast">
+            <label for="show-ast">Show parse tree</label>
+            <div id="ast-container" style="display:none">
+            </div>
+          </p>
+          <p>
+            <input type="checkbox" autocomplete="off" name="show-tt" id="show-tt">
+            <label for="show-tt">Show truth table</label>
+            <div id="tt-container" style="display:none">
+            </div>
+          </p>
+        </div>
         <p>
           Mode:
           <select id="oracle-variant">

@@ -180,7 +180,11 @@ ul.drop li:hover > ul {
   padding: 20px;
 }
 
-.ttvalue {
+.truth-table-cell {
+  cursor: pointer;
+}
+
+.ttvalue, .truth-table-cell {
   color: #333;
   font-weight: bold;
 }
@@ -189,4 +193,8 @@ ul.drop li:hover > ul {
   background: #EEE;
   border-radius: 3px;
   padding: 6px;
+}
+
+.hidden {
+  display: none;
 }

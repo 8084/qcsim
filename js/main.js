@@ -373,8 +373,68 @@ window.onload = () => {
     }
 
 
+    // Flag for 'updateOracleInputVariant'
+    var inputAsTruthTable = false;
+    var inputTruthTableArity = 0;
+
+    let updateOracleInputVariant = () => {
+        const table = document.querySelector('#oracle-truth-table-input');
+        const input = document.querySelector('#prop-oracle');
+        const label = document.querySelector('#oracle-enter-truth-table');
+        const propContainer = document.querySelector('#oracle-proposition-container');
+        const optionsContainer = document.querySelector('#oracle-prop-preview-options');
+
+        let toggle = evt => {
+            let elem = evt.target;
+            elem.textContent = (elem.textContent == '0') ? '1' : '0';
+        }
+
+        if (inputAsTruthTable) {
+            let arity = prompt('Enter arity of the function:', 2);
+            if (arity === null) { return; }
+            arity = Number.parseInt(arity);
+            inputTruthTableArity = arity;
+            if (!Number.isInteger(arity) || arity < 1) {
+                alert("Please enter positive integer!");
+                return;
+            }
+
+            let tt = zhegalkin.constructTT(arity);
+            for (let row of tt) {
+                let tr = document.createElement('tr');
+                table.appendChild(tr);
+                for (let cell of row) {
+                    let td = document.createElement('td');
+                    td.textContent = cell ? '1' : '0';
+                    tr.appendChild(td);
+                }
+                let td = document.createElement('td');
+                td.textContent = '0';
+                td.classList.add('truth-table-cell');
+                td.onclick = toggle;
+                tr.appendChild(td);
+            }
+
+        } else {
+            table.innerHTML = '';
+        }
+
+        propContainer.classList[inputAsTruthTable ? 'add' : 'remove']('hidden');
+        optionsContainer.classList[inputAsTruthTable ? 'add' : 'remove']('hidden');
+        input.disabled = inputAsTruthTable;
+        label.textContent = inputAsTruthTable ? 'Enter logical proposition' : 'Enter truth table instead';
+    }
+
+    document.querySelector('#oracle-enter-truth-table').onclick = evt => {
+        inputAsTruthTable = !inputAsTruthTable;
+        updateOracleInputVariant();
+    }
+
     document.querySelector('#apply-oracle').onclick = evt => {
-        var name = document.querySelector('#oracle-name').value;
+        var arity, ttc, nqubits, gates, circuit;
+        const side = document.querySelector('#oracle-variant').value,
+              name = document.querySelector('#oracle-name').value;
+
         if (!name) {
             alert('Please specify circuit name!');
             return;
@@ -385,19 +445,22 @@ window.onload = () => {
             if (!overwrite) return;
         }
 
-        var ast = checkInput();
+        if (!inputAsTruthTable) {
+            var ast = checkInput();
+            if (ast === null) return;
+            arity = zhegalkin.getMaxVar(ast);
+            // construct last column of the truth table
+            ttc = zhegalkin.constructTT(arity)
+                           .map(args => zhegalkin.evaluate(ast, args));
+        } else {
+            const inputTable = document.querySelector('#oracle-truth-table-input');
+            arity = inputTruthTableArity;
+            ttc = Array.from(inputTable.querySelectorAll('.truth-table-cell'))
+                       .map(e => e.textContent == '1');
+        }
 
-        if (ast === null) return;
+        nqubits = arity + 1;
 
-        var arity = zhegalkin.getMaxVar(ast);
-        var nqubits = arity + 1;
-        var ttargs = zhegalkin.constructTT(arity);
-        // construct last columnt of truth table;
-        var ttc = ttargs.map(args => {
-            return zhegalkin.evaluate(ast, args);
-        })
-
-        var side = document.querySelector('#oracle-variant').value, gates;
         if (side == 'left') {
             gates = zhegalkin.constructCircuit(ttc, true);
         } else if (side == 'right')  {
@@ -411,7 +474,7 @@ window.onload = () => {
         }
         gates = gates.sort((a, b) => a.time - b.time);
 
-        var circuit = Circuit.load(app.workspace, nqubits, gates);
+        circuit = Circuit.load(app.workspace, nqubits, gates);
         circuit.inputs = new Array(nqubits).fill(0);
 
         const size = Math.pow(2, nqubits);
